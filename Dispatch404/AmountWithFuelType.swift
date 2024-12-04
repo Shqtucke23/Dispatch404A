@@ -16,20 +16,34 @@ struct AmountTextFieldStyle: ViewModifier {
             .background(Color(.systemGray6))
     }
 }
-// Added: Custom view for amount with fuel type selection
 struct AmountWithFuelType: View {
     @Binding var amount: String
     @Binding var selectedFuelType: String
+    var hasExcessAmount: Bool
     var onAmountChanged: ((String) -> Void)?
+    
+    private var borderColor: Color {
+        if hasExcessAmount {
+            return .red
+        }
+        return amount.count == 4 ? .green : Color.gray.opacity(0.3)
+    }
+    
+    private var borderWidth: CGFloat {
+        hasExcessAmount ? 1.0 : 0.5
+    }
     
     var body: some View {
         HStack(spacing: 0) {
             TextField("", text: $amount)
-                //.keyboardType(.numberPad)
-                .modifier(AmountTextFieldStyle())
-                .onChange(of: amount) { newValue in
-                       onAmountChanged?(newValue)
-                   }
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+                .foregroundColor(.primary)
+                .padding(.horizontal, 8)
+                .frame(height: 36)
+                .onChange(of: amount) { oldValue, newValue in  // Updated syntax
+                        onAmountChanged?(newValue)
+                    }
             
             Menu {
                 ForEach(["UNL", "PREM", "ULSD", "HSD", "K-1"], id: \.self) { fuelType in
@@ -41,15 +55,18 @@ struct AmountWithFuelType: View {
                 }
             } label: {
                 Text(selectedFuelType)
-                    .foregroundColor(.blue)
-                    .padding(.trailing, 4) // Reduced padding
-                    .padding(.leading, -4) // Added negative padding to bring fuel type closer to amount
-                    .frame(width: 45) // Fixed width for fuel type
-                    .font(.system(size: 14)) // Smaller font size
+                    .foregroundColor(.primary)
+                    .padding(.trailing, 4)
+                    .padding(.leading, 8)
+                    .frame(width: 55)
+                    .font(.system(size: 14))
             }
         }
-        .frame(height: 36) // Reduced overall height
-        //.background(Color(.systemGray6))
+        .frame(height: 36)
         .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(borderColor, lineWidth: borderWidth)
+        )
     }
 }

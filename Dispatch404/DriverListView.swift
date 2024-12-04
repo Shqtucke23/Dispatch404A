@@ -76,6 +76,7 @@ struct DispatchListView: View {
     
     let stations: [User]
     let drivers = ["ADAM", "ANTHONY", "CLARENCE", "DANIEL", "DEWAYNE", "JERRY", "MARK", "MICHAEL", "TIM", "TOBIN", "ALCO", "CLARK", "PETE", "SOMCO"]
+    @State private var showExcessAmountAlert = false // Add this
     
     @State private var state = DispatchState()
     @State private var selectedDriver: String? = nil
@@ -94,14 +95,27 @@ struct DispatchListView: View {
         "SPARTY": ("S", .orange)
     ]
     
-    private func validateAmount(_ amount: String, fuelType: String) {
-        let isValid = amount == "0" || (amount.count == 4 && amount.allSatisfy { $0.isNumber })
-        if !isValid, let index = state.amounts.firstIndex(of: amount) {
-            state.amounts[index] = ""
+    private var totalAmount: Int {
+            state.amounts.compactMap { Int($0) }.reduce(0, +)
         }
         
-        if fuelType == "UNL", let amountValue = Int(amount), amountValue <= 3500 && amountValue > 0 {
-            showLowGasAlert = true
+        private var hasExcessAmount: Bool {
+            totalAmount > 8500
+        }
+    
+    private func validateAmount(_ amount: String, fuelType: String) {
+        // Only validate if amount has at least 4 digits
+        if amount.count >= 4 {
+            let isValid = amount == "0" || (amount.count == 4 && amount.allSatisfy { $0.isNumber })
+            if !isValid, let index = state.amounts.firstIndex(of: amount) {
+                state.amounts[index] = ""
+            }
+            
+            // Only show alert if amount is 4 digits and meets criteria
+            if fuelType == "UNL", let amountValue = Int(amount),
+               amount.count == 4 && amountValue <= 3500 && amountValue > 0 {
+                showLowGasAlert = true
+            }
         }
     }
     
@@ -118,7 +132,7 @@ struct DispatchListView: View {
                       isAllFieldsValid: isAllFieldsValid,
                       brandColors: brandColors,
                       terminalInfo: terminalInfo,
-                      onAmountChanged: validateAmount)
+                       onAmountChanged: validateAmount, hasExcessAmount: hasExcessAmount)
         }
         .navigationTitle("Today's Dispatch")
         .alert("Low Gas Warning", isPresented: $showLowGasAlert) {
@@ -139,6 +153,7 @@ struct StationRow: View {
     let brandColors: [String: Color]
     let terminalInfo: [String: (letter: String, color: Color)]
     let onAmountChanged: (String, String) -> Void
+    let hasExcessAmount: Bool
     
     var body: some View {  // Added missing body property
         VStack(spacing: 12) {
@@ -210,14 +225,15 @@ struct StationRow: View {
                             ForEach(0..<2) { col in
                                 let index = row * 2 + col
                                 AmountWithFuelType(
-                                    amount: Binding(
-                                        get: { state.amounts[index] },
-                                        set: { state.amounts[index] = $0 }
-                                    ),
-                                    selectedFuelType: .constant(state.fuelTypes[index]),
-                                    onAmountChanged: { newAmount in
-                                        onAmountChanged(newAmount, state.fuelTypes[index])
-                                    }
+                                        amount: Binding(
+                                            get: { state.amounts[index] },
+                                            set: { state.amounts[index] = $0 }
+                                        ),
+                                        selectedFuelType: .constant(state.fuelTypes[index]),
+                                        hasExcessAmount: hasExcessAmount,
+                                        onAmountChanged: { newAmount in
+                                            onAmountChanged(newAmount, state.fuelTypes[index])
+                                        }
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
