@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F417FBF22D0085D800301F7E /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = F417FBF12D0085C600301F7E /* data.json */; };
+		F417FBF42D008E1400301F7E /* drivers.json in Sources */ = {isa = PBXBuildFile; fileRef = F417FBF32D008E0200301F7E /* drivers.json */; };
+		F417FBF62D008E6C00301F7E /* ReadJsonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F417FBF52D008E5800301F7E /* ReadJsonData.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F472A7192D00785D001F063E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +30,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F417FBF12D0085C600301F7E /* data.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
+		F417FBF32D008E0200301F7E /* drivers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = drivers.json; sourceTree = "<group>"; };
+		F417FBF52D008E5800301F7E /* ReadJsonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadJsonData.swift; sourceTree = "<group>"; };
 		F472A7072D00785A001F063E /* Dispatch404.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dispatch404.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F472A7182D00785D001F063E /* Dispatch404Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Dispatch404Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F472A7222D00785D001F063E /* Dispatch404UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Dispatch404UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +84,9 @@
 		F472A6FE2D00785A001F063E = {
 			isa = PBXGroup;
 			children = (
+				F417FBF12D0085C600301F7E /* data.json */,
+				F417FBF32D008E0200301F7E /* drivers.json */,
+				F417FBF52D008E5800301F7E /* ReadJsonData.swift */,
 				F472A7092D00785A001F063E /* Dispatch404 */,
 				F472A71B2D00785D001F063E /* Dispatch404Tests */,
 				F472A7252D00785D001F063E /* Dispatch404UITests */,
@@ -212,6 +224,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F417FBF22D0085D800301F7E /* data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +249,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F417FBF42D008E1400301F7E /* drivers.json in Sources */,
+				F417FBF62D008E6C00301F7E /* ReadJsonData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,7 +407,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Dispatch404/Preview Content\"";
-				DEVELOPMENT_TEAM = 77V8HF4F2C;
+				DEVELOPMENT_TEAM = 79M729PMA7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -431,7 +446,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Dispatch404/Preview Content\"";
-				DEVELOPMENT_TEAM = 77V8HF4F2C;
+				DEVELOPMENT_TEAM = 79M729PMA7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
