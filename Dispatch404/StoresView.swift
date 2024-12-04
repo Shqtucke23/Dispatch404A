@@ -106,14 +106,14 @@ struct StoresView: View {
                     }
                     .tint(.blue)
                 }
-//                .swipeActions(edge: .leading) {
-//                    NavigationLink {
-//                        DispatchListView(stations: [info]) // Pass only this station
-//                    } label: {
-//                        Label("Dispatch", systemImage: "truck")
-//                    }
-//                    .tint(.green)
-//                }
+                .swipeActions(edge: .leading) {
+                    NavigationLink {
+                        DispatchListView(stations: [info]) // Pass only this station
+                    } label: {
+                        Label("Dispatch", systemImage: "truck")
+                    }
+                    .tint(.green)
+                }
                 //.swipeActions(...)
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
