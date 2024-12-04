@@ -8,16 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab = 0
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView(selection: $selectedTab) {
+            StoresView()
+                .tabItem {
+                    Label("Stores", systemImage: "storefront.fill")
+                }
+                .tag(0)
+            
+            DriversView()
+                .tabItem {
+                    Label("Drivers", systemImage: "car.fill")
+                }
+                .tag(1)
+            
+            TerminalsView()
+                .tabItem {
+                    Label("Terminals", systemImage: "creditcard.fill")
+                }
+                .tag(2)
+            
+            NotesView()
+                .tabItem {
+                    Label("Notes", systemImage: "note.text")
+                }
+                .tag(3)
         }
-        .padding()
+        .tint(.blue) // Sets the accent color for selected tabs
     }
 }
+
 
 #Preview {
     ContentView()
