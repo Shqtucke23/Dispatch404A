@@ -4,12 +4,21 @@
 //
 //  Created by Shawn Tucker on 12/4/24.
 //
-
 import SwiftUI
 
 struct StationRow: View {
     // MARK: - Properties
     let info: User
+    
+    // NEW: Added TimeSlot enum and state
+    enum TimeSlot: String, CaseIterable {
+        case anyTime = "Any time"
+        case earlyShift = "12am - 7am"
+        case dayShift = "7am - 3pm"
+        case lateShift = "3pm - 12am"
+    }
+    @State private var selectedTimeSlot: TimeSlot = .anyTime
+    @State private var isTimeSlotExpanded = false
     @Binding var state: DispatchListView.DispatchState
     @Binding var selectedDriver: String?
     let drivers: [String]
@@ -26,10 +35,18 @@ struct StationRow: View {
         VStack(spacing: 12) {
             stationInfoSection
             driverSelectionSection
+            if selectedDriver != nil {
+                timeSlotSection
+            }
             dispatchAmountSection
-            notesSection  // NEW: Added notes section to main VStack
+            notesSection
         }
         .padding(.vertical, 8)
+        // NEW: Added tap gesture to dismiss keyboard
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                         to: nil, from: nil, for: nil)
+        }
     }
     
     // MARK: - View Components
@@ -108,15 +125,53 @@ struct StationRow: View {
         .padding(.top, 8)
     }
     
+    // NEW: Added time slot section
+    private var timeSlotSection: some View {
+        HStack {
+            Text("Time slot:")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+            
+            Menu {
+                ForEach(TimeSlot.allCases, id: \.self) { slot in
+                    Button(action: {
+                        selectedTimeSlot = slot
+                    }) {
+                        if selectedTimeSlot == slot {
+                            Label(slot.rawValue, systemImage: "checkmark")
+                        } else {
+                            Text(slot.rawValue)
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(selectedTimeSlot.rawValue)
+                        .font(.system(size: 14))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12))
+                }
+                .foregroundColor(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+    }
+    
     // NEW: Added notes section component
     private var notesSection: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "note.text")
-                .foregroundColor(.yellow)
+                .foregroundColor(.gray)
                 .frame(width: 24, height: 24)
             
             TextField("Add notes...", text: $notes, axis: .vertical)
-                .font(.system(size: 16))
+                .font(.system(size: 13))
                 .lineLimit(3)
                 .textFieldStyle(PlainTextFieldStyle())
                 .padding(12)

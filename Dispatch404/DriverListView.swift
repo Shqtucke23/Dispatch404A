@@ -77,7 +77,6 @@ struct DispatchListView: View {
     let stations: [User]
     let drivers = ["ADAM", "ANTHONY", "CLARENCE", "DANIEL", "DEWAYNE", "JERRY", "MARK", "MICHAEL", "TIM", "TOBIN", "ALCO", "CLARK", "PETE", "SOMCO"]
     @State private var showExcessAmountAlert = false // Add this
-    
     @State private var state = DispatchState()
     @State private var selectedDriver: String? = nil
     @State private var showLowGasAlert = false
