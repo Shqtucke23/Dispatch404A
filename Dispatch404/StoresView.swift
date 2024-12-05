@@ -9,7 +9,7 @@ import SwiftUI
 struct StoresView: View {
     @ObservedObject var data = ReadJsonData()
     @State private var searchText = ""
-    @State private var dispatchedStations: Set<String> = [] // Using store ID to track dispatched stations
+    @State private var dispatchedStations: Set<UUID> = [] // Using store ID to track dispatched stations
     
     var filteredStations: [User] {
         guard !searchText.isEmpty else { return data.users }
@@ -86,7 +86,7 @@ struct StoresView: View {
                                 .background(getBrandColor(info.brand).opacity(0.1))
                                 .cornerRadius(6)
                         }
-                        //.opacity(dispatchedStations.contains(info.id) ? 0.5 : 1)
+                        .opacity(dispatchedStations.contains(info.id) ? 0.5 : 1)
                         .padding(.vertical, 4)
                         
                     }
@@ -107,12 +107,26 @@ struct StoresView: View {
                     .tint(.blue)
                 }
                 .swipeActions(edge: .leading) {
-                    NavigationLink {
-                        DispatchListView(stations: [info]) // Pass only this station
-                    } label: {
-                        Label("Dispatch", systemImage: "truck")
-                    }
-                    .tint(.green)
+                   NavigationLink {
+                       DispatchListView(stations: [info])
+                   } label: {
+                       Circle()
+                           .fill(.white)
+                           .frame(width: 30, height: 30)
+                           .overlay(
+                               Group {
+                                   if dispatchedStations.contains(info.id) {
+                                       Image(systemName: "minus")
+                                           .foregroundColor(.red)
+                                   } else {
+                                       Image(systemName: "plus")
+                                           .foregroundColor(.green)
+                                   }
+                               }
+                               .font(.system(size: 16, weight: .bold))
+                           )
+                   }
+                   .tint(.green)
                 }
                 //.swipeActions(...)
                 .listRowSeparator(.hidden)
