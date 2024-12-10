@@ -45,8 +45,10 @@ struct StationRow: View {
     @State private var selectedTimeSlot: TimeSlot = .anyTime
     @State private var isTimeSlotExpanded = false
     @State private var notes: String = ""
+    @State private var isOrderConfirmed = false
     @Binding var state: DispatchListView.DispatchState
     @Binding var selectedDriver: String?
+    
     let drivers: [String]
     let isAllFieldsValid: Bool
     let brandColors: [String: Color]
@@ -153,40 +155,42 @@ struct StationRow: View {
     
     // NEW: Added time slot section
     private var timeSlotSection: some View {
-        HStack {
-            Text("Time slot:")
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
-            
-            Menu {
-                ForEach(TimeSlot.allCases, id: \.self) { slot in
-                    Button(action: {
-                        selectedTimeSlot = slot
-                    }) {
-                        if selectedTimeSlot == slot {
-                            Label(slot.rawValue, systemImage: "checkmark")
-                        } else {
-                            Text(slot.rawValue)
+            HStack {
+                Text("Deliver time:")
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
+                
+                Menu {
+                    ForEach(TimeSlot.allCases, id: \.self) { slot in
+                        Button(action: {
+                            selectedTimeSlot = slot
+                        }) {
+                            if selectedTimeSlot == slot {
+                                Label(slot.rawValue, systemImage: "checkmark")
+                            } else {
+                                Text(slot.rawValue)
+                            }
                         }
                     }
+                } label: {
+                    HStack {
+                        Text(selectedTimeSlot.rawValue)
+                            .font(.system(size: 14))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 12))
+                    }
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
                 }
-            } label: {
-                HStack {
-                    Text(selectedTimeSlot.rawValue)
-                        .font(.system(size: 14))
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12))
-                }
-                .foregroundColor(.primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
+                
+                Spacer()
             }
-            
-            Spacer()
-        }
-        .padding(.horizontal, 16)
+            .padding(.horizontal, 16)
+
+        
     }
     
     // NEW: Added notes section component
@@ -237,62 +241,94 @@ struct StationRow: View {
     }
     
     private var schedulingSection: some View {
-        HStack(spacing: 12) {
-            // Day dropdown
-            Menu {
-                ForEach(WeekDay.allCases, id: \.self) { day in
-                    Button(action: { selectedDay = day }) {
-                        if selectedDay == day {
-                            Label(day.rawValue, systemImage: "checkmark")
-                        } else {
-                            Text(day.rawValue)
-                        }
-                    }
-                }
-            } label: {
-                menuLabel(text: selectedDay.rawValue)
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Order placed:")
+                .font(.system(size: 14))
+                .foregroundStyle(.secondary)
             
-            // Time dropdown
-            Menu {
-                ForEach(times, id: \.self) { time in
-                    Button(action: { selectedTime = time }) {
-                        if selectedTime == time {
-                            Label(time, systemImage: "checkmark")
-                        } else {
-                            Text(time)
+            HStack(spacing: 12) {
+                // Day dropdown
+                Menu {
+                    ForEach(WeekDay.allCases, id: \.self) { day in
+                        Button(action: { selectedDay = day }) {
+                            if selectedDay == day {
+                                Label(day.rawValue, systemImage: "checkmark")
+                            } else {
+                                Text(day.rawValue)
+                            }
                         }
                     }
+                } label: {
+                    menuLabel(text: selectedDay.rawValue)
                 }
-            } label: {
-                menuLabel(text: selectedTime)
-            }
-            
-            // Contact method dropdown
-            Menu {
-                ForEach(ContactMethod.allCases, id: \.self) { method in
-                    Button(action: { selectedContact = method }) {
-                        if selectedContact == method {
-                            Label(method.rawValue, systemImage: "checkmark")
-                        } else {
-                            Text(method.rawValue)
+                
+                // Time dropdown
+                Menu {
+                    ForEach(times, id: \.self) { time in
+                        Button(action: { selectedTime = time }) {
+                            if selectedTime == time {
+                                Label(time, systemImage: "checkmark")
+                            } else {
+                                Text(time)
+                            }
                         }
                     }
+                } label: {
+                    menuLabel(text: selectedTime)
                 }
-            } label: {
-                menuLabel(text: selectedContact.rawValue)
+                
+                // Contact method dropdown
+                Menu {
+                    ForEach(ContactMethod.allCases, id: \.self) { method in
+                        Button(action: { selectedContact = method }) {
+                            if selectedContact == method {
+                                Label(method.rawValue, systemImage: "checkmark")
+                            } else {
+                                Text(method.rawValue)
+                            }
+                        }
+                    }
+                } label: {
+                    menuLabel(text: selectedContact.rawValue)
+                }
+
+                // REPLACE the existing checkmark button with this updated version
+                // This gives better touch area and proper spacing
+                Button(action: {
+                    withAnimation {
+                        isOrderConfirmed.toggle()
+                    }
+                }) {
+                    ZStack {
+                        Circle()
+                            .stroke(isOrderConfirmed ? Color.green : Color.gray.opacity(0.5), lineWidth: 1.5)
+                            .frame(width: 24, height: 24)
+                        
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(isOrderConfirmed ? .green : .gray.opacity(0.5))
+                    }
+                    .frame(width: 44, height: 44)  // Makes touch target bigger
+                    .contentShape(Rectangle())      // Makes entire frame tappable
+                }
+                .padding(.leading, 8)               // Adds space between dropdown and checkmark
             }
         }
         .padding(.horizontal, 16)
     }
+        
+    
     
     // NEW: Helper function for consistent menu label styling
     private func menuLabel(text: String) -> some View {
         HStack {
             Text(text)
                 .font(.system(size: 14))
-            Image(systemName: "chevron.down")
-                .font(.system(size: 12))
+                .frame(minWidth: 30)
+            if !isOrderConfirmed {  // This is correct now - show/hide chevron based on confirmation
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 12))
+            }
         }
         .foregroundColor(.primary)
         .padding(.horizontal, 12)
@@ -301,3 +337,4 @@ struct StationRow: View {
         .cornerRadius(8)
     }
 }
+
