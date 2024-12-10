@@ -10,6 +10,27 @@ struct StationRow: View {
     // MARK: - Properties
     let info: User
     
+    // NEW: Added enums for the new dropdowns
+       enum WeekDay: String, CaseIterable {
+           case mon = "Mon", tue = "Tue", wed = "Wed", thu = "Thu"
+           case fri = "Fri", sat = "Sat", sun = "Sun"
+       }
+       
+       enum ContactMethod: String, CaseIterable {
+           case email = "Email"
+           case text = "Text"
+           case phone = "Phone"
+       }
+    
+    // NEW: Added time array for the time dropdown
+       let times = stride(from: 0, to: 24*60, by: 15).map { minutes in
+           let hour = (minutes / 60) % 12
+           let adjustedHour = hour == 0 ? 12 : hour
+           let minute = String(format: "%02d", minutes % 60)
+           let period = minutes < 12*60 ? "am" : "pm"
+           return "\(adjustedHour):\(minute)\(period)"
+       }
+    
     // NEW: Added TimeSlot enum and state
     enum TimeSlot: String, CaseIterable {
         case anyTime = "Any time"
@@ -17,8 +38,13 @@ struct StationRow: View {
         case dayShift = "7am - 3pm"
         case lateShift = "3pm - 12am"
     }
+    
+    @State private var selectedDay: WeekDay = .mon
+    @State private var selectedTime: String = "12:00am"
+    @State private var selectedContact: ContactMethod = .email
     @State private var selectedTimeSlot: TimeSlot = .anyTime
     @State private var isTimeSlotExpanded = false
+    @State private var notes: String = ""
     @Binding var state: DispatchListView.DispatchState
     @Binding var selectedDriver: String?
     let drivers: [String]
@@ -27,13 +53,13 @@ struct StationRow: View {
     let terminalInfo: [String: (letter: String, color: Color)]
     let onAmountChanged: (String, String) -> Void
     let hasExcessAmount: Bool
-    // NEW: Added state property for notes
-    @State private var notes: String = ""
+    
     
     // MARK: - Body
     var body: some View {
         VStack(spacing: 12) {
             stationInfoSection
+            schedulingSection
             driverSelectionSection
             if selectedDriver != nil {
                 timeSlotSection
@@ -208,5 +234,70 @@ struct StationRow: View {
             }
         }
         .padding(.horizontal, 16)
+    }
+    
+    private var schedulingSection: some View {
+        HStack(spacing: 12) {
+            // Day dropdown
+            Menu {
+                ForEach(WeekDay.allCases, id: \.self) { day in
+                    Button(action: { selectedDay = day }) {
+                        if selectedDay == day {
+                            Label(day.rawValue, systemImage: "checkmark")
+                        } else {
+                            Text(day.rawValue)
+                        }
+                    }
+                }
+            } label: {
+                menuLabel(text: selectedDay.rawValue)
+            }
+            
+            // Time dropdown
+            Menu {
+                ForEach(times, id: \.self) { time in
+                    Button(action: { selectedTime = time }) {
+                        if selectedTime == time {
+                            Label(time, systemImage: "checkmark")
+                        } else {
+                            Text(time)
+                        }
+                    }
+                }
+            } label: {
+                menuLabel(text: selectedTime)
+            }
+            
+            // Contact method dropdown
+            Menu {
+                ForEach(ContactMethod.allCases, id: \.self) { method in
+                    Button(action: { selectedContact = method }) {
+                        if selectedContact == method {
+                            Label(method.rawValue, systemImage: "checkmark")
+                        } else {
+                            Text(method.rawValue)
+                        }
+                    }
+                }
+            } label: {
+                menuLabel(text: selectedContact.rawValue)
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+    
+    // NEW: Helper function for consistent menu label styling
+    private func menuLabel(text: String) -> some View {
+        HStack {
+            Text(text)
+                .font(.system(size: 14))
+            Image(systemName: "chevron.down")
+                .font(.system(size: 12))
+        }
+        .foregroundColor(.primary)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
 }
