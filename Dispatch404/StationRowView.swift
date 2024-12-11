@@ -34,9 +34,10 @@ struct StationRow: View {
     // NEW: Added TimeSlot enum and state
     enum TimeSlot: String, CaseIterable {
         case anyTime = "Any time"
-        case earlyShift = "12am - 7am"
-        case dayShift = "7am - 3pm"
-        case lateShift = "3pm - 12am"
+        case earlyShift = "OverNight"
+        case dayShift = "Morning"
+        case lateShift = "Afternoon"
+        case eveningShift = "Evening"
     }
     
     @State private var selectedDay: WeekDay = .mon
@@ -59,7 +60,7 @@ struct StationRow: View {
     
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             stationInfoSection
             schedulingSection
             driverSelectionSection
@@ -314,7 +315,7 @@ struct StationRow: View {
                 .padding(.leading, 8)               // Adds space between dropdown and checkmark
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 5)
     }
         
     
